@@ -1,0 +1,13 @@
+spring:
+  r2dbc:
+    url:
+    username:
+    password:
+  data:
+    redis:
+      host:
+      port:
+
+logging:
+  level:
+    org.springframework.r2dbc.core: debug
