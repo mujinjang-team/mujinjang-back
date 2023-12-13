@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 public interface CouponRepository extends R2dbcRepository<Coupon, Long> {
 
-    Flux<Coupon> findAllBy(Pageable pageable);
+	Flux<Coupon> findAllBy(Pageable pageable);
 
-    Mono<Coupon> findByCode(String code);
+	Mono<Coupon> findByCode(String code);
 }

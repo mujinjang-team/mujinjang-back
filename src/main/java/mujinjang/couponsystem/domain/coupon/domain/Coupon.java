@@ -15,28 +15,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Coupon {
 
-    @Id
-    private Long id;
+	@Id
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private String code;
+	private String code;
 
-    private CouponType type;
+	private CouponType type;
 
-    private Double discount;
+	private Double discount;
 
-    private Long amount;
+	private Long amount;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+	@CreatedDate
+	private LocalDateTime createdAt;
 
-    @Builder
-    public Coupon(String name, String code, CouponType type, Double discount, Long amount) {
-        this.name = name;
-        this.code = code;
-        this.type = type;
-        this.discount = discount;
-        this.amount = amount;
-    }
+	@Builder
+	public Coupon(String name, String code, CouponType type, Double discount, Long amount) {
+		this.name = name;
+		this.code = code;
+		this.type = type;
+		this.discount = discount;
+		this.amount = amount;
+	}
 }

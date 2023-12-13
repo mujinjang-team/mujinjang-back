@@ -25,43 +25,43 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
 
-    private final CouponRepository couponRepository;
-    private final CouponQueryService couponQueryService;
+	private final CouponRepository couponRepository;
+	private final CouponQueryService couponQueryService;
 
-    @Override
-    @Transactional
-    public Mono<CreateCouponResponse> createCoupon(final IssueCouponRequest dto) {
-        return couponRepository.findByCode(dto.code())
-                   .flatMap(coupon -> Optional.ofNullable(coupon)
-                                              .map(c -> Mono.<CreateCouponResponse>error(
-                                                      new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED)))
-                                              .orElseGet(() -> createCouponEntity(dto)
-                                                      .map(crateCoupon -> new CreateCouponResponse(
-                                                              crateCoupon.getId()))));
-    }
+	@Override
+	@Transactional
+	public Mono<CreateCouponResponse> createCoupon(final IssueCouponRequest dto) {
+		return couponRepository.findByCode(dto.code())
+			.flatMap(coupon -> Optional.ofNullable(coupon)
+				.map(c -> Mono.<CreateCouponResponse>error(
+					new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED)))
+				.orElseGet(() -> createCouponEntity(dto)
+					.map(crateCoupon -> new CreateCouponResponse(
+						crateCoupon.getId()))));
+	}
 
-    @Override
-    public Mono<Page<CouponInfoResponse>> getCouponsInfo(final Pageable pageable) {
-        return couponRepository.findAllBy(pageable)
-                .map(CouponInfoResponse::of)
-                .collectList()
-                .zipWith(couponRepository.count())
-                .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
-    }
+	@Override
+	public Mono<Page<CouponInfoResponse>> getCouponsInfo(final Pageable pageable) {
+		return couponRepository.findAllBy(pageable)
+			.map(CouponInfoResponse::of)
+			.collectList()
+			.zipWith(couponRepository.count())
+			.map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
+	}
 
-    @Override
-    public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
-        return couponQueryService.getCoupon(couponId)
-                                 .map(CouponInfoResponse::of);
-    }
+	@Override
+	public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
+		return couponQueryService.getCoupon(couponId)
+			.map(CouponInfoResponse::of);
+	}
 
-    private Mono<Coupon> createCouponEntity(IssueCouponRequest dto) {
-        return couponRepository.save(Coupon.builder()
-                                           .name(dto.name())
-                                           .code(dto.code())
-                                           .type(dto.type())
-                                           .discount(dto.discount())
-                                           .amount(dto.amount())
-                                           .build());
-    }
+	private Mono<Coupon> createCouponEntity(IssueCouponRequest dto) {
+		return couponRepository.save(Coupon.builder()
+			.name(dto.name())
+			.code(dto.code())
+			.type(dto.type())
+			.discount(dto.discount())
+			.amount(dto.amount())
+			.build());
+	}
 }

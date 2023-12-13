@@ -4,5 +4,5 @@ import mujinjang.couponsystem.domain.user.domain.User;
 import reactor.core.publisher.Mono;
 
 public interface UserQueryService {
-    Mono<User> getUser(Long userId);
+	Mono<User> getUser(Long userId);
 }

@@ -15,12 +15,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CouponQueryServiceImpl implements CouponQueryService {
 
-    private final CouponRepository couponRepository;
+	private final CouponRepository couponRepository;
 
-    @Override
-    public Mono<Coupon> getCoupon(final Long couponId) {
-        return couponRepository.findById(couponId)
-                .switchIfEmpty(Mono.error(new CouponNotFoundException()));
-    }
+	@Override
+	public Mono<Coupon> getCoupon(final Long couponId) {
+		return couponRepository.findById(couponId)
+			.switchIfEmpty(Mono.error(new CouponNotFoundException()));
+	}
 
 }
