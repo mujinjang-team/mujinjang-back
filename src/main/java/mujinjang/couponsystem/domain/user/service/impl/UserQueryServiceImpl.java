@@ -15,11 +15,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserQueryServiceImpl implements UserQueryService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    @Override
-    public Mono<User> getUser(final Long userId) {
-        return userRepository.findById(userId)
-                .switchIfEmpty(Mono.error(new UserNotFoundException()));
-    }
+	@Override
+	public Mono<User> getUser(final Long userId) {
+		return userRepository.findById(userId)
+			.switchIfEmpty(Mono.error(new UserNotFoundException()));
+	}
 }

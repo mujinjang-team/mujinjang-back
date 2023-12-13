@@ -8,9 +8,9 @@ import mujinjang.couponsystem.domain.coupon.dto.response.IssueCouponWalletRespon
 import reactor.core.publisher.Mono;
 
 public interface CouponWalletService {
-    Mono<IssueCouponWalletResponse> issueCoupon(Long userId, Long couponId);
+	Mono<IssueCouponWalletResponse> issueCoupon(Long userId, Long couponId);
 
-    Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(Pageable pageable);
+	Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(Pageable pageable);
 
-    Mono<Void> useCoupon(Long couponWalletId);
+	Mono<Void> useCoupon(Long couponWalletId);
 }

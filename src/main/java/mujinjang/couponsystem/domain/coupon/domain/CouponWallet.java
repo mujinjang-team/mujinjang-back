@@ -14,24 +14,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class CouponWallet {
 
-    @Id
-    private Long id;
+	@Id
+	private Long id;
 
-    private Long userId;
+	private Long userId;
 
-    private Long couponId;
+	private Long couponId;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+	@CreatedDate
+	private LocalDateTime createdAt;
 
-    private LocalDateTime usedAt;
+	private LocalDateTime usedAt;
 
-    public CouponWallet(Long userId, Long couponId) {
-        this.userId = userId;
-        this.couponId = couponId;
-    }
+	public CouponWallet(Long userId, Long couponId) {
+		this.userId = userId;
+		this.couponId = couponId;
+	}
 
-    public void useCoupon() {
-        this.usedAt = LocalDateTime.now();
-    }
+	public void useCoupon() {
+		this.usedAt = LocalDateTime.now();
+	}
 }

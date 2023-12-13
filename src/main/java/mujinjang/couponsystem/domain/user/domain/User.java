@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
-    @Id
-    private Long id;
+	@Id
+	private Long id;
 
-    private String username;
+	private String username;
 
-    public User(String username) {
-        this.username = username;
-    }
+	public User(String username) {
+		this.username = username;
+	}
 }

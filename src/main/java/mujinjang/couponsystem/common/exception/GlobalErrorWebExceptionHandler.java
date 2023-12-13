@@ -24,30 +24,29 @@ import reactor.core.publisher.Mono;
 @Order(-2)
 public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-    public GlobalErrorWebExceptionHandler(final GlobalErrorAttributes globalErrorAttributes,
-                                       final ApplicationContext applicationContext,
-                                       final ServerCodecConfigurer serverCodecConfigurer) {
-        super(globalErrorAttributes, new Resources(), applicationContext);
-        super.setMessageReaders(serverCodecConfigurer.getReaders());
-        super.setMessageWriters(serverCodecConfigurer.getWriters());
-    }
+	public GlobalErrorWebExceptionHandler(final GlobalErrorAttributes globalErrorAttributes,
+		final ApplicationContext applicationContext,
+		final ServerCodecConfigurer serverCodecConfigurer) {
+		super(globalErrorAttributes, new Resources(), applicationContext);
+		super.setMessageReaders(serverCodecConfigurer.getReaders());
+		super.setMessageWriters(serverCodecConfigurer.getWriters());
+	}
 
+	@Override
+	protected RouterFunction<ServerResponse> getRoutingFunction(final ErrorAttributes errorAttributes) {
+		return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
+	}
 
-    @Override
-    protected RouterFunction<ServerResponse> getRoutingFunction(final ErrorAttributes errorAttributes) {
-        return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
-    }
+	private Mono<ServerResponse> renderErrorResponse(final ServerRequest request) {
+		final Map<String, Object> errorPropertiesMap = getErrorAttributes(request,
+			ErrorAttributeOptions.defaults());
+		errorPropertiesMap.remove("error");
+		errorPropertiesMap.remove("path");
+		errorPropertiesMap.remove("requestId");
 
-    private Mono<ServerResponse> renderErrorResponse(final ServerRequest request) {
-        final Map<String, Object> errorPropertiesMap = getErrorAttributes(request,
-                                                                    ErrorAttributeOptions.defaults());
-        errorPropertiesMap.remove("error");
-        errorPropertiesMap.remove("path");
-        errorPropertiesMap.remove("requestId");
-
-        return ServerResponse.status((int) errorPropertiesMap.get("status"))
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body(BodyInserters.fromValue(errorPropertiesMap));
-    }
+		return ServerResponse.status((int)errorPropertiesMap.get("status"))
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(BodyInserters.fromValue(errorPropertiesMap));
+	}
 }
 

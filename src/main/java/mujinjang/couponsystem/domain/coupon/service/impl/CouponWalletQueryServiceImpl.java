@@ -15,11 +15,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CouponWalletQueryServiceImpl implements CouponWalletQueryService {
 
-    private final CouponWalletRepository couponWalletRepository;
+	private final CouponWalletRepository couponWalletRepository;
 
-    @Override
-    public Mono<CouponWallet> getCouponWallet(Long couponWalletId) {
-        return couponWalletRepository.findById(couponWalletId)
-                                     .switchIfEmpty(Mono.error(new CouponWalletNotFoundException()));
-    }
+	@Override
+	public Mono<CouponWallet> getCouponWallet(Long couponWalletId) {
+		return couponWalletRepository.findById(couponWalletId)
+			.switchIfEmpty(Mono.error(new CouponWalletNotFoundException()));
+	}
 }

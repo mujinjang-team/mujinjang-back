@@ -34,55 +34,55 @@ import reactor.core.publisher.Mono;
 @Tag(name = "쿠폰 API")
 public class CouponController {
 
-    private final CouponService couponService;
+	private final CouponService couponService;
 
-    @Operation(summary = "쿠폰 발급 API")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "쿠폰 생성 성공")
-    })
-    @PostMapping
-    public Mono<ResponseEntity<CreateCouponResponse>> issueCoupon(
-            @Valid @RequestBody Mono<IssueCouponRequest> request) {
-        return request.flatMap(couponService::createCoupon)
-                        .map(responseDto -> ResponseEntity.status(HttpStatus.CREATED)
-                                                       .body(responseDto));
-    }
+	@Operation(summary = "쿠폰 발급 API")
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "201",
+			description = "쿠폰 생성 성공")
+	})
+	@PostMapping
+	public Mono<ResponseEntity<CreateCouponResponse>> issueCoupon(
+		@Valid @RequestBody Mono<IssueCouponRequest> request) {
+		return request.flatMap(couponService::createCoupon)
+			.map(responseDto -> ResponseEntity.status(HttpStatus.CREATED)
+				.body(responseDto));
+	}
 
-    @Operation(summary = "쿠폰 발급 목록 조회 API")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "쿠폰 발급 목록 반환 성공")
-    })
-    @GetMapping
-    public Mono<ResponseEntity<Page<CouponInfoResponse>>> getCouponsInfo(
-            @Parameter(name = "page", description = "페이지네이션의 페이지 넘버. 0부터 시작함", in = ParameterIn.QUERY)
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @Parameter(name = "size", description = "페이지네이션의 페이지당 데이터 수", in = ParameterIn.QUERY)
-            @RequestParam(value = "size", required = false, defaultValue = "20") int size
-    ) {
-        return Mono.just(PageRequest.of(page, size))
-                   .flatMap(couponService::getCouponsInfo)
-                       .map(ResponseEntity::ok);
-    }
+	@Operation(summary = "쿠폰 발급 목록 조회 API")
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "쿠폰 발급 목록 반환 성공")
+	})
+	@GetMapping
+	public Mono<ResponseEntity<Page<CouponInfoResponse>>> getCouponsInfo(
+		@Parameter(name = "page", description = "페이지네이션의 페이지 넘버. 0부터 시작함", in = ParameterIn.QUERY)
+		@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+		@Parameter(name = "size", description = "페이지네이션의 페이지당 데이터 수", in = ParameterIn.QUERY)
+		@RequestParam(value = "size", required = false, defaultValue = "20") int size
+	) {
+		return Mono.just(PageRequest.of(page, size))
+			.flatMap(couponService::getCouponsInfo)
+			.map(ResponseEntity::ok);
+	}
 
-    @Operation(summary = "쿠폰 조회 API")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "쿠폰 조회 성공"),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "C001: 쿠폰을 찾을 수 없음",
-            content = @Content(schema = @Schema(hidden = true)))
-    })
-    @GetMapping("/{id}")
-    public Mono<ResponseEntity<CouponInfoResponse>> getCouponInfo(
-            @Parameter(name = "id", description = "쿠폰 ID", in = ParameterIn.PATH)
-            @PathVariable("id") Long couponId) {
-        return couponService.getCouponInfo(couponId)
-                            .map(ResponseEntity::ok);
-    }
+	@Operation(summary = "쿠폰 조회 API")
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "쿠폰 조회 성공"),
+		@ApiResponse(
+			responseCode = "404",
+			description = "C001: 쿠폰을 찾을 수 없음",
+			content = @Content(schema = @Schema(hidden = true)))
+	})
+	@GetMapping("/{id}")
+	public Mono<ResponseEntity<CouponInfoResponse>> getCouponInfo(
+		@Parameter(name = "id", description = "쿠폰 ID", in = ParameterIn.PATH)
+		@PathVariable("id") Long couponId) {
+		return couponService.getCouponInfo(couponId)
+			.map(ResponseEntity::ok);
+	}
 }
