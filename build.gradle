@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'checkstyle'
+    id 'org.sonarqube' version '4.4.1.3373'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -63,4 +64,13 @@ tasks.withType(Checkstyle).configureEach {
 checkstyle {
     configFile = file("config/checkstyle/naver-checkstyle-rules.xml")
     configProperties = [suppressionFile: file("config/checkstyle/naver-checkstyle-suppressions.xml")]
+}
+
+sonar {
+    properties {
+        property 'sonar.projectKey', 'mujinjang-team_mujinjang-back'
+        property 'sonar.organization', 'mujinjang-team'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.java.checkstyle.reportPaths', 'build/reports/checkstyle/main.xml'
+    }
 }
