@@ -1,7 +1,5 @@
 package mujinjang.couponsystem.domain.coupon.service.impl;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,12 +30,12 @@ public class CouponServiceImpl implements CouponService {
 	@Transactional
 	public Mono<CreateCouponResponse> createCoupon(final IssueCouponRequest dto) {
 		return couponRepository.findByCode(dto.code())
-			.flatMap(coupon -> Optional.ofNullable(coupon)
-				.map(c -> Mono.<CreateCouponResponse>error(
-					new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED)))
-				.orElseGet(() -> createCouponEntity(dto)
-					.map(crateCoupon -> new CreateCouponResponse(
-						crateCoupon.getId()))));
+			.flatMap(coupon ->
+				Mono.<CreateCouponResponse>error(new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED))
+			).switchIfEmpty(
+				createCouponEntity(dto).map(createCoupon -> new CreateCouponResponse(createCoupon.getId()))
+			);
+
 	}
 
 	@Override
@@ -51,8 +49,7 @@ public class CouponServiceImpl implements CouponService {
 
 	@Override
 	public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
-		return couponQueryService.getCoupon(couponId)
-			.map(CouponInfoResponse::of);
+		return couponQueryService.getCoupon(couponId).map(CouponInfoResponse::of);
 	}
 
 	private Mono<Coupon> createCouponEntity(IssueCouponRequest dto) {
