@@ -11,11 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
 import mujinjang.couponsystem.domain.coupon.domain.CouponWallet;
 import mujinjang.couponsystem.domain.coupon.exception.CouponNotFoundException;
-import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.repository.CouponWalletRepository;
+import mujinjang.couponsystem.domain.coupon.service.impl.CouponQueryServiceImpl;
 import mujinjang.couponsystem.domain.user.domain.User;
 import mujinjang.couponsystem.domain.user.exception.UserNotFoundException;
-import mujinjang.couponsystem.domain.user.repository.UserRepository;
+import mujinjang.couponsystem.domain.user.service.impl.UserQueryServiceImpl;
 import mujinjang.couponsystem.domain.user.service.impl.UserServiceImpl;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -28,20 +28,19 @@ class UserCouponIssueServiceMockTest {
 
 	@Mock
 	private CouponWalletRepository couponWalletRepository;
+	@Mock
+	private UserQueryServiceImpl userQueryService;
 
 	@Mock
-	private UserRepository userRepository;
-
-	@Mock
-	private CouponRepository couponRepository;
+	private CouponQueryServiceImpl couponQueryService;
 
 	@Test
 	void isCouponIssued_CouponNotIssued() {
 		Long userId = 1L;
 		Long couponId = 1L;
 
-		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
-		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
+		when(userQueryService.getUser(userId)).thenReturn(Mono.just(mock(User.class)));
+		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(Mono.empty());
 
 		StepVerifier.create(userService.isCouponIssued(userId, couponId))
@@ -54,8 +53,8 @@ class UserCouponIssueServiceMockTest {
 		Long userId = 1L;
 		Long couponId = 1L;
 
-		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
-		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
+		when(userQueryService.getUser(userId)).thenReturn(Mono.just(mock(User.class)));
+		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
 			Mono.just(mock(CouponWallet.class)));
 
@@ -69,8 +68,8 @@ class UserCouponIssueServiceMockTest {
 		Long userId = 1L;
 		Long couponId = 1L;
 
-		when(userRepository.findById(userId)).thenReturn(Mono.empty());
-		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
+		when(userQueryService.getUser(userId)).thenReturn(Mono.error(new UserNotFoundException()));
+		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
 			Mono.just(mock(CouponWallet.class)));
 
@@ -84,8 +83,8 @@ class UserCouponIssueServiceMockTest {
 		Long userId = 1L;
 		Long couponId = 1L;
 
-		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
-		when(couponRepository.findById(couponId)).thenReturn(Mono.empty());
+		when(userQueryService.getUser(userId)).thenReturn(Mono.just(mock(User.class)));
+		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.error(new CouponNotFoundException()));
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
 			Mono.just(mock(CouponWallet.class)));
 

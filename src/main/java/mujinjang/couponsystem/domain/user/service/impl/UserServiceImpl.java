@@ -4,11 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import mujinjang.couponsystem.domain.coupon.exception.CouponNotFoundException;
-import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.repository.CouponWalletRepository;
-import mujinjang.couponsystem.domain.user.exception.UserNotFoundException;
-import mujinjang.couponsystem.domain.user.repository.UserRepository;
+import mujinjang.couponsystem.domain.coupon.service.CouponQueryService;
+import mujinjang.couponsystem.domain.user.service.UserQueryService;
 import mujinjang.couponsystem.domain.user.service.UserService;
 import reactor.core.publisher.Mono;
 
@@ -16,17 +14,15 @@ import reactor.core.publisher.Mono;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-	private final CouponRepository couponRepository;
 	private final CouponWalletRepository couponWalletRepository;
-	private final UserRepository userRepository;
+	private final UserQueryService userQueryService;
+	private final CouponQueryService couponQueryService;
 
 	@Override
 	public Mono<Boolean> isCouponIssued(Long userId, Long couponId) {
 		return Mono.zip(
-				userRepository.findById(userId)
-					.switchIfEmpty(Mono.error(new UserNotFoundException())),
-				couponRepository.findById(couponId)
-					.switchIfEmpty(Mono.error(new CouponNotFoundException())))
+				userQueryService.getUser(userId),
+				couponQueryService.getCoupon(couponId))
 			.then(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)
 				.map(couponWallet -> true)
 				.defaultIfEmpty(false));
@@ -35,10 +31,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<Boolean> isCouponUsed(Long userId, Long couponId) {
 		return Mono.zip(
-				userRepository.findById(userId)
-					.switchIfEmpty(Mono.error(new UserNotFoundException())),
-				couponRepository.findById(couponId)
-					.switchIfEmpty(Mono.error(new CouponNotFoundException())))
+				userQueryService.getUser(userId),
+				couponQueryService.getCoupon(couponId))
 			.then(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)
 				.map(couponWallet -> couponWallet.getUsedAt() != null));
 	}
