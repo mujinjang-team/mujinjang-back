@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import mujinjang.couponsystem.domain.coupon.dto.request.IssueCouponRequest;
+import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
 import mujinjang.couponsystem.domain.coupon.dto.response.CreateCouponResponse;
 import mujinjang.couponsystem.domain.coupon.service.CouponService;
@@ -36,25 +36,25 @@ public class CouponController {
 
 	private final CouponService couponService;
 
-	@Operation(summary = "쿠폰 발급 API")
+	@Operation(summary = "쿠폰 생성 API")
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "201",
 			description = "쿠폰 생성 성공")
 	})
 	@PostMapping
-	public Mono<ResponseEntity<CreateCouponResponse>> issueCoupon(
-		@Valid @RequestBody Mono<IssueCouponRequest> request) {
+	public Mono<ResponseEntity<CreateCouponResponse>> createCoupon(
+		@Valid @RequestBody Mono<CreateCouponRequest> request) {
 		return request.flatMap(couponService::createCoupon)
 			.map(responseDto -> ResponseEntity.status(HttpStatus.CREATED)
 				.body(responseDto));
 	}
 
-	@Operation(summary = "쿠폰 발급 목록 조회 API")
+	@Operation(summary = "쿠폰 리스트 조회 API")
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "200",
-			description = "쿠폰 발급 목록 반환 성공")
+			description = "쿠폰 리스트 반환 성공")
 	})
 	@GetMapping
 	public Mono<ResponseEntity<Page<CouponInfoResponse>>> getCouponsInfo(
