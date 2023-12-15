@@ -1,5 +1,8 @@
 package mujinjang.couponsystem.domain.coupon.controller;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -85,4 +88,21 @@ public class CouponController {
 		return couponService.getCouponInfo(couponId)
 			.map(ResponseEntity::ok);
 	}
+
+	@Operation(summary = "쿠폰 발급 가능 여부 조회 API", description = "쿠폰의 수량이 남아있는지 확인합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "쿠폰 발급 가능 여부 조회 성공"),
+		@ApiResponse(
+			responseCode = "404",
+			description = "C001: 쿠폰을 찾을 수 없음",
+			content = @Content(schema = @Schema(hidden = true))),
+	})
+	@GetMapping(("{couponId}/remain"))
+	public Mono<ResponseEntity<Map<String, Boolean>>> isCouponRemain(@PathVariable("couponId") Long couponId) {
+		return couponService.isCouponRemain(couponId)
+			.map(remain -> ResponseEntity.ok(Collections.singletonMap("isRemained", remain)));
+	}
 }
+

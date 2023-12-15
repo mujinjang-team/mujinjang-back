@@ -7,6 +7,7 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import mujinjang.couponsystem.domain.coupon.domain.CouponWallet;
 import mujinjang.couponsystem.domain.coupon.dto.response.CouponUsageStatusResponse;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface CouponWalletRepository extends R2dbcRepository<CouponWallet, Long> {
 
@@ -18,4 +19,7 @@ public interface CouponWalletRepository extends R2dbcRepository<CouponWallet, Lo
 		+ "ORDER BY cw.created_at DESC "
 		+ "LIMIT :#{#pageable.pageSize} OFFSET :#{#pageable.offset}")
 	Flux<CouponUsageStatusResponse> findAllCouponUsageStatus(Pageable pageable);
+
+	@Query("SELECT * FROM coupon_wallet cw WHERE cw.user_id = :userId AND cw.coupon_id = :couponId")
+	Mono<CouponWallet> findByUserIdAndCouponId(Long userId, Long couponId);
 }

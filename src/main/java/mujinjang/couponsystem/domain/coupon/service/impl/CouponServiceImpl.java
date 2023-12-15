@@ -3,6 +3,7 @@ package mujinjang.couponsystem.domain.coupon.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import mujinjang.couponsystem.common.exception.BusinessException;
 import mujinjang.couponsystem.common.exception.ErrorCode;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
-import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
+import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CreateCouponResponse;
 import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.service.CouponQueryService;
@@ -25,6 +26,7 @@ public class CouponServiceImpl implements CouponService {
 
 	private final CouponRepository couponRepository;
 	private final CouponQueryService couponQueryService;
+	private final ReactiveStringRedisTemplate redisTemplate;
 
 	@Override
 	@Transactional
@@ -50,6 +52,16 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
 		return couponQueryService.getCoupon(couponId).map(CouponInfoResponse::of);
+	}
+
+	@Override
+	public Mono<Boolean> isCouponRemain(Long couponId) {
+		return couponQueryService.getCoupon(couponId)
+			.flatMap(coupon -> {
+				String key = "coupon:" + coupon.getCode();
+				return redisTemplate.opsForSet().size(key)
+					.map(issued -> coupon.getAmount() - issued > 0);
+			});
 	}
 
 	private Mono<Coupon> createCouponEntity(CreateCouponRequest dto) {
