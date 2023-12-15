@@ -37,11 +37,11 @@ public class CouponWalletController {
 
 	private final CouponWalletService couponWalletService;
 
-	@Operation(summary = "쿠폰 지갑 발급 API")
+	@Operation(summary = "쿠폰 발급 API")
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "200",
-			description = "쿠폰 지갑 발급 성공")
+			description = "쿠폰 발급 성공")
 	})
 	@PostMapping("/issue")
 	public Mono<ResponseEntity<IssueCouponWalletResponse>> issueCoupon

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import mujinjang.couponsystem.common.exception.BusinessException;
 import mujinjang.couponsystem.common.exception.ErrorCode;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
-import mujinjang.couponsystem.domain.coupon.dto.request.IssueCouponRequest;
+import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
 import mujinjang.couponsystem.domain.coupon.dto.response.CreateCouponResponse;
 import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
@@ -28,7 +28,7 @@ public class CouponServiceImpl implements CouponService {
 
 	@Override
 	@Transactional
-	public Mono<CreateCouponResponse> createCoupon(final IssueCouponRequest dto) {
+	public Mono<CreateCouponResponse> createCoupon(final CreateCouponRequest dto) {
 		return couponRepository.findByCode(dto.code())
 			.flatMap(coupon ->
 				Mono.<CreateCouponResponse>error(new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED))
@@ -52,7 +52,7 @@ public class CouponServiceImpl implements CouponService {
 		return couponQueryService.getCoupon(couponId).map(CouponInfoResponse::of);
 	}
 
-	private Mono<Coupon> createCouponEntity(IssueCouponRequest dto) {
+	private Mono<Coupon> createCouponEntity(CreateCouponRequest dto) {
 		return couponRepository.save(Coupon.builder()
 			.name(dto.name())
 			.code(dto.code())
