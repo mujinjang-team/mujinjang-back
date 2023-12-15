@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import mujinjang.couponsystem.common.exception.BusinessException;
 import mujinjang.couponsystem.common.exception.ErrorCode;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
-import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
+import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
 import mujinjang.couponsystem.domain.coupon.dto.response.CreateCouponResponse;
 import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.service.CouponQueryService;
@@ -50,6 +50,13 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
 		return couponQueryService.getCoupon(couponId).map(CouponInfoResponse::of);
+	}
+
+	@Override
+	public Mono<Boolean> isCouponRemain(Long couponId) {
+		return couponQueryService.getCoupon(couponId)
+			.map(Coupon::getAmount)
+			.map(remain -> remain > 0);
 	}
 
 	private Mono<Coupon> createCouponEntity(CreateCouponRequest dto) {

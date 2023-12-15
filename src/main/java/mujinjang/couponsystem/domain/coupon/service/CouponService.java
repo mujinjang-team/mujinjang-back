@@ -14,4 +14,6 @@ public interface CouponService {
 	Mono<Page<CouponInfoResponse>> getCouponsInfo(Pageable pageable);
 
 	Mono<CouponInfoResponse> getCouponInfo(Long couponId);
+
+	Mono<Boolean> isCouponRemain(Long couponId);
 }
