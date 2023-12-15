@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
 import mujinjang.couponsystem.domain.coupon.domain.CouponWallet;
 import mujinjang.couponsystem.domain.coupon.exception.CouponNotFoundException;
+import mujinjang.couponsystem.domain.coupon.exception.CouponWalletNotFoundException;
 import mujinjang.couponsystem.domain.coupon.repository.CouponWalletRepository;
 import mujinjang.couponsystem.domain.coupon.service.impl.CouponQueryServiceImpl;
 import mujinjang.couponsystem.domain.user.domain.User;
@@ -98,6 +99,20 @@ class UserCouponUseServiceMockTest {
 
 		StepVerifier.create(userService.isCouponUsed(userId, couponId))
 			.expectError(CouponNotFoundException.class)
+			.verify();
+	}
+
+	@Test
+	void isCouponUsed_CouponWalletNotFound() {
+		Long userId = 1L;
+		Long couponId = 1L;
+
+		when(userQueryService.getUser(userId)).thenReturn(Mono.just(mock(User.class)));
+		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
+		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(Mono.empty());
+
+		StepVerifier.create(userService.isCouponUsed(userId, couponId))
+			.expectError(CouponWalletNotFoundException.class)
 			.verify();
 	}
 }
