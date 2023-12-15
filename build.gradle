@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'checkstyle'
+    id 'org.sonarqube' version '4.4.1.3373'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -29,7 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0'
 
-    runtimeOnly "io.asyncer:r2dbc-mysql"
+    runtimeOnly 'io.asyncer:r2dbc-mysql'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -40,8 +41,8 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.testcontainers:testcontainers:1.19.3'
 
-    if (System.getProperty("os.arch") == "aarch64" && System.getProperty("os.name") == "Mac OS X") {
-        runtimeOnly("io.netty:netty-resolver-dns-native-macos::osx-aarch_64")
+    if (System.getProperty('os.arch') == 'aarch64' && System.getProperty('os.name') == 'Mac OS X') {
+        runtimeOnly('io.netty:netty-resolver-dns-native-macos::osx-aarch_64')
     }
 }
 
@@ -61,6 +62,15 @@ tasks.withType(Checkstyle).configureEach {
 }
 
 checkstyle {
-    configFile = file("config/checkstyle/naver-checkstyle-rules.xml")
-    configProperties = [suppressionFile: file("config/checkstyle/naver-checkstyle-suppressions.xml")]
+    configFile = file('config/checkstyle/naver-checkstyle-rules.xml')
+    configProperties = [suppressionFile: file('config/checkstyle/naver-checkstyle-suppressions.xml')]
+}
+
+sonar {
+    properties {
+        property 'sonar.projectKey', 'mujinjang-team_mujinjang-back'
+        property 'sonar.organization', 'mujinjang-team'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.java.checkstyle.reportPaths', 'build/reports/checkstyle/main.xml'
+    }
 }
