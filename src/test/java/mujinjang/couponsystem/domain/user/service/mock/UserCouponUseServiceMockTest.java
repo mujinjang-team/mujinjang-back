@@ -2,6 +2,8 @@ package mujinjang.couponsystem.domain.user.service.mock;
 
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +23,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-class UserCouponIssueServiceMockTest {
+class UserCouponUseServiceMockTest {
 
 	@InjectMocks
 	private UserServiceImpl userService;
@@ -36,36 +38,41 @@ class UserCouponIssueServiceMockTest {
 	private CouponRepository couponRepository;
 
 	@Test
-	void isCouponIssued_CouponNotIssued() {
+	void isCouponUsed_whenCouponUsed() {
 		Long userId = 1L;
 		Long couponId = 1L;
+		CouponWallet couponWallet = mock(CouponWallet.class);
+
+		when(couponWallet.getUsedAt()).thenReturn(LocalDateTime.now());
 
 		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
 		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
-		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(Mono.empty());
+		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId))
+			.thenReturn(Mono.just(couponWallet));
 
-		StepVerifier.create(userService.isCouponIssued(userId, couponId))
-			.expectNext(false)
-			.verifyComplete();
-	}
-
-	@Test
-	void isCouponIssued_CouponIssued() {
-		Long userId = 1L;
-		Long couponId = 1L;
-
-		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
-		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
-		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
-			Mono.just(mock(CouponWallet.class)));
-
-		StepVerifier.create(userService.isCouponIssued(userId, couponId))
+		StepVerifier.create(userService.isCouponUsed(userId, couponId))
 			.expectNext(true)
 			.verifyComplete();
 	}
 
 	@Test
-	void isCouponIssued_UserNotFound() {
+	void isCouponUsed_whenCouponIsNotUsed() {
+		Long userId = 1L;
+		Long couponId = 1L;
+		CouponWallet couponWallet = mock(CouponWallet.class);
+
+		when(userRepository.findById(userId)).thenReturn(Mono.just(mock(User.class)));
+		when(couponRepository.findById(couponId)).thenReturn(Mono.just(mock(Coupon.class)));
+		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId))
+			.thenReturn(Mono.just(couponWallet));
+
+		StepVerifier.create(userService.isCouponUsed(userId, couponId))
+			.expectNext(false)
+			.verifyComplete();
+	}
+
+	@Test
+	void isCouponUsed_UserNotFound() {
 		Long userId = 1L;
 		Long couponId = 1L;
 
@@ -74,13 +81,13 @@ class UserCouponIssueServiceMockTest {
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
 			Mono.just(mock(CouponWallet.class)));
 
-		StepVerifier.create(userService.isCouponIssued(userId, couponId))
+		StepVerifier.create(userService.isCouponUsed(userId, couponId))
 			.expectError(UserNotFoundException.class)
 			.verify();
 	}
 
 	@Test
-	void isCouponIssued_CouponNotFound() {
+	void isCouponUsed_CouponNotFound() {
 		Long userId = 1L;
 		Long couponId = 1L;
 
@@ -89,9 +96,8 @@ class UserCouponIssueServiceMockTest {
 		when(couponWalletRepository.findByUserIdAndCouponId(userId, couponId)).thenReturn(
 			Mono.just(mock(CouponWallet.class)));
 
-		StepVerifier.create(userService.isCouponIssued(userId, couponId))
+		StepVerifier.create(userService.isCouponUsed(userId, couponId))
 			.expectError(CouponNotFoundException.class)
 			.verify();
 	}
-
 }

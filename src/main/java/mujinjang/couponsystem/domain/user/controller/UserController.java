@@ -40,4 +40,20 @@ public class UserController {
 			.map(issued -> ResponseEntity.ok(Collections.singletonMap("isIssued", issued)));
 	}
 
+	@Operation(summary = "쿠폰 사용 여부 조회 API", description = "유저가 쿠폰을 사용했는지 여부를 조회합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(
+			responseCode = "200",
+			description = "쿠폰 사용 여부 조회 성공"),
+		@ApiResponse(
+			responseCode = "404",
+			description = "유저 또는 쿠폰을 찾을 수 없습니다.")
+	})
+	@GetMapping("/{userId}/coupons/{couponId}/used")
+	public Mono<ResponseEntity<Map<String, Boolean>>> isCouponUsed(@PathVariable Long userId,
+		@PathVariable Long couponId) {
+		return userService.isCouponUsed(userId, couponId)
+			.map(used -> ResponseEntity.ok(Collections.singletonMap("isUsed", used)));
+	}
+
 }

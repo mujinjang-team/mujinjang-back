@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-class CouponServiceMockTest {
+class CouponRemainServiceMockTest {
 	@InjectMocks
 	private CouponServiceImpl couponService;
 	@Mock
