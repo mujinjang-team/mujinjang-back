@@ -8,10 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.ReactiveSetOperations;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
 import mujinjang.couponsystem.domain.coupon.exception.CouponNotFoundException;
-import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.service.CouponQueryService;
 import mujinjang.couponsystem.domain.coupon.service.impl.CouponServiceImpl;
 import reactor.core.publisher.Mono;
@@ -23,22 +24,28 @@ class CouponRemainServiceMockTest {
 	private CouponServiceImpl couponService;
 	@Mock
 	private CouponQueryService couponQueryService;
-
 	@Mock
-	private CouponRepository couponRepository;
+	private ReactiveStringRedisTemplate redisTemplate;
+	@Mock
+	private ReactiveSetOperations<String, String> reactiveSetOperations;
 
 	@Test
 	void isCouponRemainTest_whenCouponExistAndAmountGreaterThanZero() {
 		Long couponId = 1L;
+		String couponCode = "couponCode";
+		Long issued = 50L;
+
 		Coupon coupon = Coupon.builder()
 			.name("couponName")
-			.code("couponCode")
+			.code(couponCode)
 			.type(PERCENTAGE)
 			.discount(20.0)
 			.amount(100L)
 			.build();
 
 		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(coupon));
+		when(redisTemplate.opsForSet()).thenReturn(reactiveSetOperations);
+		when(reactiveSetOperations.size("coupon:" + couponCode)).thenReturn(Mono.just(issued));
 
 		StepVerifier.create(couponService.isCouponRemain(couponId))
 			.expectNext(true)
@@ -48,15 +55,20 @@ class CouponRemainServiceMockTest {
 	@Test
 	void isCouponRemainTest_whenCouponExistAndAmountZero() {
 		Long couponId = 1L;
+		String couponCode = "couponCode";
+		Long issued = 50L;
+
 		Coupon coupon = Coupon.builder()
 			.name("couponName")
-			.code("couponCode")
+			.code(couponCode)
 			.type(PERCENTAGE)
 			.discount(20.0)
-			.amount(0L)
+			.amount(50L)
 			.build();
 
 		when(couponQueryService.getCoupon(couponId)).thenReturn(Mono.just(coupon));
+		when(redisTemplate.opsForSet()).thenReturn(reactiveSetOperations);
+		when(reactiveSetOperations.size("coupon:" + couponCode)).thenReturn(Mono.just(issued));
 
 		StepVerifier.create(couponService.isCouponRemain(couponId))
 			.expectNext(false)

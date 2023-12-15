@@ -3,6 +3,7 @@ package mujinjang.couponsystem.domain.coupon.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class CouponServiceImpl implements CouponService {
 
 	private final CouponRepository couponRepository;
 	private final CouponQueryService couponQueryService;
+	private final ReactiveStringRedisTemplate redisTemplate;
 
 	@Override
 	@Transactional
@@ -55,8 +57,11 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	public Mono<Boolean> isCouponRemain(Long couponId) {
 		return couponQueryService.getCoupon(couponId)
-			.map(Coupon::getAmount)
-			.map(remain -> remain > 0);
+			.flatMap(coupon -> {
+				String key = "coupon:" + coupon.getCode();
+				return redisTemplate.opsForSet().size(key)
+					.map(issued -> coupon.getAmount() - issued > 0);
+			});
 	}
 
 	private Mono<Coupon> createCouponEntity(CreateCouponRequest dto) {
