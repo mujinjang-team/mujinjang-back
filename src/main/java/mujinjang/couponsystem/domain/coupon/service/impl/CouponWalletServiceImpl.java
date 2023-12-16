@@ -63,8 +63,8 @@ public class CouponWalletServiceImpl implements CouponWalletService {
 	}
 
 	@Override
-	public Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(final Pageable pageable) {
-		return couponWalletRepository.findAllCouponUsageStatus(pageable)
+	public Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(final Long couponId, final Pageable pageable) {
+		return couponWalletRepository.findAllCouponUsageStatusByCouponId(pageable, couponId)
 			.collectList()
 			.zipWith(couponWalletRepository.count())
 			.map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));

@@ -56,17 +56,19 @@ public class CouponWalletController {
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "200",
-			description = "쿠폰 사용 현황 조회 성공")
+			description = "쿠폰 사용 현황 조회 성공(쿠폰을 최근에 발급한 사용자를 먼저 보여줍니다.)")
 	})
 	@GetMapping
 	public Mono<ResponseEntity<Page<CouponUsageStatusResponse>>> getCouponUsageStatus(
+		@Parameter(name = "couponId", description = "쿠폰 ID", in = ParameterIn.QUERY)
+		@RequestParam(value = "couponId", required = true) Long couponId,
 		@Parameter(name = "page", description = "페이지네이션의 페이지 넘버. 0부터 시작함", in = ParameterIn.QUERY)
 		@RequestParam(value = "page", required = false, defaultValue = "0") int page,
 		@Parameter(name = "size", description = "페이지네이션의 페이지당 데이터 수", in = ParameterIn.QUERY)
 		@RequestParam(value = "size", required = false, defaultValue = "20") int size
 	) {
 		return Mono.just(PageRequest.of(page, size))
-			.flatMap(couponWalletService::getCouponUsageStatus)
+			.flatMap(pageable -> couponWalletService.getCouponUsageStatus(couponId, pageable))
 			.map(ResponseEntity::ok);
 	}
 
