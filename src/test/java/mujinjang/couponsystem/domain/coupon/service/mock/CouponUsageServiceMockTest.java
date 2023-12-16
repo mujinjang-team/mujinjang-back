@@ -52,7 +52,7 @@ public class CouponUsageServiceMockTest {
 	void getCouponUsage_whenCouponWalletExist() {
 		// given
 		CouponUsageStatusResponse couponUsageStatusResponse = new CouponUsageStatusResponse(
-			"couponName", 1L, "username", LocalDateTime.now(), LocalDateTime.now());
+			1L, "username", LocalDateTime.now(), LocalDateTime.now());
 		given(couponWalletRepository.findAllCouponUsageStatusByCouponId(any(Pageable.class), anyLong()))
 			.willReturn(Flux.just(couponUsageStatusResponse));
 		given(couponWalletRepository.count()).willReturn(Mono.just(1L));
