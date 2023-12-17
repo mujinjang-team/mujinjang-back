@@ -30,7 +30,7 @@ import mujinjang.couponsystem.domain.coupon.service.CouponWalletService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/coupon-wallets")
+@RequestMapping("/api/coupon-wallets")
 @RequiredArgsConstructor
 @Tag(name = "쿠폰 지갑 API", description = "쿠폰이 유저에게 발급되면 쿠폰 지갑이 됩니다.")
 public class CouponWalletController {

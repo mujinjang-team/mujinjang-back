@@ -32,7 +32,7 @@ import mujinjang.couponsystem.domain.coupon.service.CouponService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/coupons")
+@RequestMapping("/api/coupons")
 @RequiredArgsConstructor
 @Tag(name = "쿠폰 API")
 public class CouponController {
