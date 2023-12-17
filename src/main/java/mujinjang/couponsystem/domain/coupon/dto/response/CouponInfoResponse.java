@@ -14,12 +14,13 @@ public record CouponInfoResponse(@Schema(description = "쿠폰 id") Long couponI
 								 @Schema(description = "쿠폰 코드") String code,
 								 @Schema(description = "쿠폰 종류") String type,
 								 @Schema(description = "할인 정도") Double discount,
-								 @Schema(description = "쿠폰 발급 양", minimum = "1") Long amount,
+								 @Schema(description = "쿠폰 발급 수량", minimum = "1") Long amount,
+								 @Schema(description = "쿠폰 잔여 수량", minimum = "0") Long remainCouponNum,
 								 @Schema(description = "쿠폰 생성일")
 								 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 								 LocalDateTime createdAt) {
 
-	public static CouponInfoResponse of(Coupon coupon) {
+	public static CouponInfoResponse of(Coupon coupon, Long remainCouponNum) {
 		return CouponInfoResponse.builder()
 			.couponId(coupon.getId())
 			.name(coupon.getName())
@@ -27,6 +28,7 @@ public record CouponInfoResponse(@Schema(description = "쿠폰 id") Long couponI
 			.type(coupon.getType().name())
 			.discount(coupon.getDiscount())
 			.amount(coupon.getAmount())
+			.remainCouponNum(remainCouponNum)
 			.createdAt(coupon.getCreatedAt())
 			.build();
 	}

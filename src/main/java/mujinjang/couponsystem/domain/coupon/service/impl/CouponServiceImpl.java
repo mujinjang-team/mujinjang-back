@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import mujinjang.couponsystem.common.exception.BusinessException;
 import mujinjang.couponsystem.common.exception.ErrorCode;
 import mujinjang.couponsystem.domain.coupon.domain.Coupon;
-import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
 import mujinjang.couponsystem.domain.coupon.dto.request.CreateCouponRequest;
+import mujinjang.couponsystem.domain.coupon.dto.response.CouponInfoResponse;
 import mujinjang.couponsystem.domain.coupon.dto.response.CreateCouponResponse;
 import mujinjang.couponsystem.domain.coupon.repository.CouponRepository;
 import mujinjang.couponsystem.domain.coupon.service.CouponQueryService;
@@ -32,36 +32,38 @@ public class CouponServiceImpl implements CouponService {
 	@Transactional
 	public Mono<CreateCouponResponse> createCoupon(final CreateCouponRequest dto) {
 		return couponRepository.findByCode(dto.code())
-			.flatMap(coupon ->
-				Mono.<CreateCouponResponse>error(new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED))
-			).switchIfEmpty(
-				createCouponEntity(dto).map(createCoupon -> new CreateCouponResponse(createCoupon.getId()))
-			);
+			.flatMap(
+				coupon -> Mono.<CreateCouponResponse>error(new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED)))
+			.switchIfEmpty(createCouponEntity(dto).map(createCoupon -> new CreateCouponResponse(createCoupon.getId())));
 
 	}
 
 	@Override
 	public Mono<Page<CouponInfoResponse>> getCouponsInfo(final Pageable pageable) {
-		return couponRepository.findAllBy(pageable)
-			.map(CouponInfoResponse::of)
-			.collectList()
-			.zipWith(couponRepository.count())
-			.map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
+		return couponRepository.findAllBy(pageable).flatMap(coupon -> {
+			final String key = "coupon:" + coupon.getCode();
+			return redisTemplate.opsForSet()
+				.size(key)
+				.map(issuedCouponNum -> CouponInfoResponse.of(coupon, coupon.getAmount() - issuedCouponNum));
+		}).collectList().zipWith(couponRepository.count()).map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));
 	}
 
 	@Override
 	public Mono<CouponInfoResponse> getCouponInfo(Long couponId) {
-		return couponQueryService.getCoupon(couponId).map(CouponInfoResponse::of);
+		return couponQueryService.getCoupon(couponId).flatMap(coupon -> {
+			final String key = "coupon:" + coupon.getCode();
+			return redisTemplate.opsForSet()
+				.size(key)
+				.map(issuedCouponNum -> CouponInfoResponse.of(coupon, coupon.getAmount() - issuedCouponNum));
+		});
 	}
 
 	@Override
 	public Mono<Boolean> isCouponRemain(Long couponId) {
-		return couponQueryService.getCoupon(couponId)
-			.flatMap(coupon -> {
-				String key = "coupon:" + coupon.getCode();
-				return redisTemplate.opsForSet().size(key)
-					.map(issued -> coupon.getAmount() - issued > 0);
-			});
+		return couponQueryService.getCoupon(couponId).flatMap(coupon -> {
+			String key = "coupon:" + coupon.getCode();
+			return redisTemplate.opsForSet().size(key).map(issued -> coupon.getAmount() - issued > 0);
+		});
 	}
 
 	private Mono<Coupon> createCouponEntity(CreateCouponRequest dto) {
