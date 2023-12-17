@@ -11,14 +11,13 @@ import reactor.core.publisher.Mono;
 
 public interface CouponWalletRepository extends R2dbcRepository<CouponWallet, Long> {
 
-	@Query("SELECT cw.coupon_id, c.name AS coupon_name, cw.user_id, u.username, cw.created_at "
-		+ "AS coupon_issued_at, cw.used_at AS coupon_used_at "
+	@Query("SELECT cw.user_id, u.username, cw.created_at AS coupon_issued_at, cw.used_at AS coupon_used_at "
 		+ "FROM coupon_wallet cw "
 		+ "INNER JOIN users u ON cw.user_id = u.id "
-		+ "INNER JOIN coupon c ON cw.coupon_id = c.id "
+		+ "WHERE cw.coupon_id = :couponId "
 		+ "ORDER BY cw.created_at DESC "
 		+ "LIMIT :#{#pageable.pageSize} OFFSET :#{#pageable.offset}")
-	Flux<CouponUsageStatusResponse> findAllCouponUsageStatus(Pageable pageable);
+	Flux<CouponUsageStatusResponse> findAllCouponUsageStatusByCouponId(Pageable pageable, Long couponId);
 
 	@Query("SELECT * FROM coupon_wallet cw WHERE cw.user_id = :userId AND cw.coupon_id = :couponId")
 	Mono<CouponWallet> findByUserIdAndCouponId(Long userId, Long couponId);

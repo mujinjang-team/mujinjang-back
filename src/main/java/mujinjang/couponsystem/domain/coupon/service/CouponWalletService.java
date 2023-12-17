@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 public interface CouponWalletService {
 	Mono<IssueCouponWalletResponse> issueCoupon(Long userId, Long couponId);
 
-	Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(Pageable pageable);
+	Mono<Page<CouponUsageStatusResponse>> getCouponUsageStatus(Long couponId, Pageable pageable);
 
 	Mono<Void> useCoupon(Long couponWalletId);
 }
