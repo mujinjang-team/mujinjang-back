@@ -52,7 +52,7 @@ public class CreateCouponServiceMockTest {
 		// given
 		String code = "notExistCode";
 		CreateCouponRequest dto = new CreateCouponRequest(code, "name", CouponType.FIXED, 1D, 1L);
-		Coupon coupon = new Coupon(code, "name", CouponType.FIXED, 1D, 1L);
+		Coupon coupon = new Coupon("name", code, CouponType.FIXED, 1D, 1L);
 		ReflectionTestUtils.setField(coupon, "id", 1L);
 		given(couponRepository.findByCode(any())).willReturn(Mono.empty());
 		given(couponRepository.save(any())).willReturn(Mono.just(coupon));
