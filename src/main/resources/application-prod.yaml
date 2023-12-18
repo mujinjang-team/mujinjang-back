@@ -1,0 +1,12 @@
+spring:
+  r2dbc:
+    url: r2dbc:pool:mysql://${R2DBC_HOST}:${R2DBC_PORT}/coupon
+    username: ${R2DBC_USERNAME}
+    password: ${R2DBC_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+logging:
+  level:
+    org.springframework.r2dbc.core: ${R2DBC_LOGGING_LEVEL}
