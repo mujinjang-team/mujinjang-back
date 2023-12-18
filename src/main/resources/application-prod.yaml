@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:pool:mysql://${R2DBC_HOST}:${R2DBC_PORT}/coupon
+    url: r2dbc:pool:mysql://${R2DBC_HOST}:${R2DBC_PORT}/coupon?serverTimezone=+09:00
     username: ${R2DBC_USERNAME}
     password: ${R2DBC_PASSWORD}
   data:
