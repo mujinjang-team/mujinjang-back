@@ -34,8 +34,9 @@ public class CouponServiceImpl implements CouponService {
 		return couponRepository.findByCode(dto.code())
 			.flatMap(
 				coupon -> Mono.<CreateCouponResponse>error(new BusinessException(ErrorCode.COUPON_CODE_DUPLICATED)))
-			.switchIfEmpty(createCouponEntity(dto).map(createCoupon -> new CreateCouponResponse(createCoupon.getId())));
-
+			.switchIfEmpty(Mono.defer(
+				() -> createCouponEntity(dto).map(createCoupon -> new CreateCouponResponse(createCoupon.getId())))
+			);
 	}
 
 	@Override
