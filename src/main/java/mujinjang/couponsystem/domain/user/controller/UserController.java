@@ -18,7 +18,7 @@ import mujinjang.couponsystem.domain.user.service.UserService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Tag(name = "유저 API", description = "유저 관련 API 입니다.")
 public class UserController {
