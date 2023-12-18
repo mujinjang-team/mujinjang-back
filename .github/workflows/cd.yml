@@ -30,7 +30,7 @@ jobs:
           context: .
           file: ./prod.Dockerfile
           push: true
-          platform: |
+          platforms: |
             linux/arm64/v8
           tags: |
             ghcr.io/${{ github.repository_owner }}/mujinjang:latest
